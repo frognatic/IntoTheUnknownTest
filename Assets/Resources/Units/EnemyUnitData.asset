@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: EnemyUnit
   _mapElementSprite: {fileID: 21300000, guid: 541ed242b65cd1e4888898bf57178b5b, type: 3}
+  _placingLimit: -1
