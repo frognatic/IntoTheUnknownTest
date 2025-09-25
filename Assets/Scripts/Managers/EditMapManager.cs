@@ -21,27 +21,13 @@ namespace IntoTheUnknownTest.Managers
 
         public void HandleTileEditClick(MapTile clickedTile)
         {
-            if (_selectedMapElement is BaseMapTileData selectedTileData)
-            {
-                ReplaceTile(clickedTile, selectedTileData);
-            }
-
-            if (_selectedMapElement is BaseUnitData selectedUnitData)
-            {
-                PlaceUnit(clickedTile, selectedUnitData);
-            }
+            TryUpdateTile(clickedTile, _selectedMapElement);
         }
 
-        private void ReplaceTile(MapTile clickedTile, BaseMapTileData selectedTileData)
+        private void TryUpdateTile(MapTile clickedTile, IMapElement mapElement)
         {
             Vector2Int gridPosition = clickedTile.GridPosition;
-            MapTileManager.Instance.TryUpdateTileAt(gridPosition, selectedTileData);
-        }
-
-        private void PlaceUnit(MapTile clickedTile, BaseUnitData selectedUnitData)
-        {
-            Vector2Int gridPosition = clickedTile.GridPosition;
-            MapTileManager.Instance.TryUpdateSlotAtTile(gridPosition, selectedUnitData);
+            MapTileManager.Instance.TryUpdateTile(gridPosition, mapElement);
         }
     }
 }

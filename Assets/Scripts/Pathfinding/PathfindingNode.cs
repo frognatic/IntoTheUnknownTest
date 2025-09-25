@@ -9,6 +9,7 @@ namespace IntoTheUnknownTest.Pathfinding
     {
         public int HeapIndex { get; set; }
         public bool IsWalkable { get; private set; }
+        public bool IsAttackableThrough { get; private set; }
         public Vector3 WorldPosition { get; }
         public Vector2Int GridPosition { get; }
         public int GCost { get; private set; }
@@ -28,6 +29,7 @@ namespace IntoTheUnknownTest.Pathfinding
         internal void SetHCost(int valueToSet) => HCost = valueToSet;
         internal void SetPreviousNode(PathfindingNode node) => PreviousNode = node;
         public void SetWalkable(bool isWalkable) => IsWalkable = isWalkable;
+        public void SetAttackableThrough(bool isAttackableThrough) => IsAttackableThrough = isAttackableThrough;
         public int CompareTo(PathfindingNode other)
         {
             int compare = FCost.CompareTo(other.FCost);

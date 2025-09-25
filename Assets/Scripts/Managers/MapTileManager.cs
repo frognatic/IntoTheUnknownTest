@@ -110,30 +110,31 @@ namespace IntoTheUnknownTest.Managers
             _previousPathTiles = tilesOnPath;
             _previousPathTiles.Add(startTileObject);
         }
-        
-        public void TryUpdateTileAt(Vector2Int gridPosition, BaseMapTileData newTileDataData)
+
+        public void TryUpdateTile(Vector2Int gridPosition, IMapElement mapElement)
         {
             if (_mapTiles.TryGetValue(gridPosition, out MapTile tileToUpdate))
             {
-                tileToUpdate.UpdateTile(newTileDataData);
+                SelectTileUpdateAction(mapElement, tileToUpdate);
 
                 var pathfindingGrid = PathfindingManager.Instance.GetPathfindingGrid();
                 PathfindingNode nodeToUpdate = pathfindingGrid.GetNode(gridPosition);
 
-                nodeToUpdate?.SetWalkable(newTileDataData.IsWalkable);
+                nodeToUpdate?.SetWalkable(mapElement.IsWalkable);
+                nodeToUpdate?.SetAttackableThrough(mapElement.IsAttackableThrough);
             }
         }
 
-        public void TryUpdateSlotAtTile(Vector2Int gridPosition, BaseUnitData newUnitData)
+        private void SelectTileUpdateAction(IMapElement mapElement, MapTile tileToUpdate)
         {
-            if (_mapTiles.TryGetValue(gridPosition, out MapTile tileToUpdate))
+            switch (mapElement)
             {
-                tileToUpdate.SetElementOnSlot(newUnitData);
-
-                var pathfindingGrid = PathfindingManager.Instance.GetPathfindingGrid();
-                PathfindingNode nodeToUpdate = pathfindingGrid.GetNode(gridPosition);
-
-                nodeToUpdate?.SetWalkable(false);
+                case BaseMapTileData selectedTileData:
+                    tileToUpdate.UpdateTile(selectedTileData);
+                    break;
+                case BaseUnitData selectedUnitData:
+                    tileToUpdate.SetElementOnSlot(selectedUnitData);
+                    break;
             }
         }
         

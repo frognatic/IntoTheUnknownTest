@@ -10,5 +10,6 @@ namespace IntoTheUnknownTest.Map
         public Sprite MapElementSprite => _mapElementSprite;
         public string Id => _id;
         public abstract bool IsWalkable { get; }
+        public abstract bool IsAttackableThrough { get; }
     }
 }

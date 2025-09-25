@@ -6,5 +6,7 @@ namespace IntoTheUnknownTest.Map
     {
         string Id { get; }
         Sprite MapElementSprite { get; }
+        bool IsWalkable { get; }
+        bool IsAttackableThrough { get; }
     }
 }

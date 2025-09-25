@@ -6,5 +6,6 @@ namespace IntoTheUnknownTest.Map
     public class ObstacleMapTileData : BaseMapTileData
     {
         public override bool IsWalkable => false;
+        public override bool IsAttackableThrough => false;
     }
 }
