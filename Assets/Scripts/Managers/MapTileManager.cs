@@ -23,6 +23,8 @@ namespace IntoTheUnknownTest.Managers
         private List<MapTile> _previousPathTiles = new List<MapTile>();
         private Dictionary<Vector2Int, MapTile> _mapTiles = new Dictionary<Vector2Int, MapTile>();
         
+        private PlayerUnitData _playerUnitData;
+        
         private const int _defaultMapTilePoolSize = 100;
         
         public List<BaseMapTileData> MapTiles => _mapTileLibrary.MapTiles;
@@ -110,6 +112,11 @@ namespace IntoTheUnknownTest.Managers
             _previousPathTiles = tilesOnPath;
             _previousPathTiles.Add(startTileObject);
         }
+        
+        public void SetTileToDefault(Vector2Int gridPosition)
+        {
+            TryUpdateTile(gridPosition, DefaultMapTileData);
+        }
 
         public void TryUpdateTile(Vector2Int gridPosition, IMapElement mapElement)
         {
@@ -134,6 +141,10 @@ namespace IntoTheUnknownTest.Managers
                     break;
                 case BaseUnitData selectedUnitData:
                     tileToUpdate.SetElementOnSlot(selectedUnitData);
+                    if (selectedUnitData is PlayerUnitData playerUnitData)
+                    {
+                        _playerUnitData = playerUnitData;
+                    }
                     break;
             }
         }
