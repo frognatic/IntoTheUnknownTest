@@ -248,10 +248,10 @@ MonoBehaviour:
   _mapTileLibrary: {fileID: 11400000, guid: fd1cf15e755e8e846adf5c95002c8735, type: 2}
   _movementRange: 4
   _mapTileContent: {fileID: 735776706}
-  _startTileColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  _inRangeColor: {r: 0, g: 1, b: 0, a: 1}
-  _outOfRangeColor: {r: 1, g: 0, b: 0, a: 1}
-  _defaultTileColor: {r: 1, g: 1, b: 1, a: 1}
+  _startTileColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 0.47058824}
+  _inRangeColor: {r: 0, g: 1, b: 0, a: 0.47058824}
+  _outOfRangeColor: {r: 1, g: 0, b: 0, a: 0.47058824}
+  _defaultTileColor: {r: 1, g: 1, b: 1, a: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
