@@ -26,6 +26,7 @@ namespace IntoTheUnknownTest.Managers
         private const int _defaultMapTilePoolSize = 100;
         
         public List<BaseMapTileData> MapTiles => _mapTileLibrary.MapTiles;
+        public BaseMapTileData DefaultMapTileData => _mapTileLibrary.DefaultMapTileData;
         
         private void Start()
         {

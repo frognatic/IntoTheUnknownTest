@@ -1,3 +1,4 @@
+using IntoTheUnknownTest.Managers;
 using IntoTheUnknownTest.Map;
 using UnityEngine;
 
@@ -31,6 +32,8 @@ namespace IntoTheUnknownTest
 
         public void SetElementOnSlot(BaseUnitData unitData)
         {
+            UpdateTile(MapTileManager.Instance.DefaultMapTileData);
+            
             _slotUnitData = unitData;
             _slotElement.sprite = _slotUnitData.MapElementSprite;
         }
