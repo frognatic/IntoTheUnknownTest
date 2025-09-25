@@ -6,32 +6,38 @@ using UnityEngine.UI;
 
 namespace IntoTheUnknownTest.UI
 {
-    public class UIMapTileSelector : MonoBehaviour
+    public class UIEditMapItemSelector : MonoBehaviour
     {
-        [SerializeField] private Image _mapTileImage;
+        [SerializeField] private Image _itemImage;
         [SerializeField] private Image _selectionImage;
 
-        private BaseMapTile _mapTile;
-        private Action _hideAllSelections;
+        private IMapElement _mapElement;
+        private Action _hideAllSelectionsAction;
         
-        public void Init(BaseMapTile mapTile, Action hideAllSelections)
+        public void Init(IMapElement mapElement, Action hideAllSelectionsAction)
         {
-            _mapTile = mapTile;
-            _hideAllSelections = hideAllSelections;
+            _mapElement = mapElement;
+            _hideAllSelectionsAction = hideAllSelectionsAction;
+            
             PrepareImage();
             HideSelection();
         }
 
         private void PrepareImage()
         {
-            _mapTileImage.sprite = _mapTile.TileSprite;
+            _itemImage.sprite = _mapElement.MapElementSprite;
         }
 
         public void OnButtonClick()
         {
-            _hideAllSelections?.Invoke();
+            _hideAllSelectionsAction?.Invoke();
             ShowSelection();
-            EditMapManager.Instance.SelectTile(_mapTile);
+            SelectAction();
+        }
+
+        private void SelectAction()
+        {
+            EditMapManager.Instance.SelectTile(_mapElement);
         }
 
         public void ShowSelection()

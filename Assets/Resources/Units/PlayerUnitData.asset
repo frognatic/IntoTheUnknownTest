@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65684c6d85afd394488e0ad81f472d28, type: 3}
-  m_Name: ObstacleMapTile
+  m_Script: {fileID: 11500000, guid: ed3e1d4c454b1284e8d1fa97157cf907, type: 3}
+  m_Name: PlayerUnitData
   m_EditorClassIdentifier: 
-  _id: Obstacle
-  _mapElementSprite: {fileID: 21300000, guid: 6b9a43e07c1a97a40a56076c6051fae6, type: 3}
+  _id: PlayerUnit
+  _mapElementSprite: {fileID: 21300000, guid: ca2ca37afb8ce674099c7f3f6860ff38, type: 3}

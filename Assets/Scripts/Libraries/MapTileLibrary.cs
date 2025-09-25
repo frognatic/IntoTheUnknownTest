@@ -7,10 +7,10 @@ namespace IntoTheUnknownTest.Libraries
     [CreateAssetMenu(fileName = "MapTileLibrary", menuName = "Data/Library/MapTileLibrary")]
     public class MapTileLibrary : ScriptableObject
     {
-        [SerializeField] private List<BaseMapTile> _mapTiles;
-        [SerializeField] private BaseMapTile _defaultMapTile;
+        [SerializeField] private List<BaseMapTileData> _mapTiles;
+        [SerializeField] private BaseMapTileData _defaultMapTileData;
         
-        public List<BaseMapTile> MapTiles => _mapTiles;
-        public BaseMapTile DefaultMapTile => _defaultMapTile;
+        public List<BaseMapTileData> MapTiles => _mapTiles;
+        public BaseMapTileData DefaultMapTileData => _defaultMapTileData;
     }
 }

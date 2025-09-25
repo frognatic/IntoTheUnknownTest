@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5211448315801093728}
   - component: {fileID: 3852182876970392415}
-  - component: {fileID: 7629197598229795665}
+  - component: {fileID: 6579844726715597016}
   m_Layer: 0
-  m_Name: UIMapTileSelectButton
+  m_Name: UIEditMapItemSelector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,7 +47,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2946540672877668459}
   m_CullTransparentMesh: 1
---- !u!114 &7629197598229795665
+--- !u!114 &6579844726715597016
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81a218c3690ca874abd263e4e1dc8d15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mapTileImage: {fileID: 2092703737283912142}
+  _itemImage: {fileID: 2092703737283912142}
   _selectionImage: {fileID: 2189164083228020468}
 --- !u!1 &8403494856805592935
 GameObject:
@@ -181,8 +181,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7629197598229795665}
-        m_TargetAssemblyTypeName: IntoTheUnknownTest.UI.UIMapTileSelector, Assembly-CSharp
+      - m_Target: {fileID: 6579844726715597016}
+        m_TargetAssemblyTypeName: IntoTheUnknownTest.UI.UIEditMapItemSelector, Assembly-CSharp
         m_MethodName: OnButtonClick
         m_Mode: 1
         m_Arguments:

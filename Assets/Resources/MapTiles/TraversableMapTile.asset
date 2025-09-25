@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22396ec4f1b3fcd478f75c49a6822d40, type: 3}
   m_Name: TraversableMapTile
   m_EditorClassIdentifier: 
-  _id: 
-  _tileSprite: {fileID: 21300000, guid: ae9932c55608cdd4db5a75d0c365e233, type: 3}
+  _id: Traversable
+  _mapElementSprite: {fileID: 21300000, guid: ae9932c55608cdd4db5a75d0c365e233, type: 3}

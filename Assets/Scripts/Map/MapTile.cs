@@ -6,27 +6,44 @@ namespace IntoTheUnknownTest
     public class MapTile : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private SpriteRenderer _slotElement;
+        [SerializeField] private SpriteRenderer _selector;
         
-        public Vector2Int GridPosition { get; private set; } 
-        private BaseMapTile _mapTile;
+        public Vector2Int GridPosition { get; private set; }
+        
+        private BaseMapTileData _mapTileData;
+        private BaseUnitData _slotUnitData;
 
-        public void InitTile(BaseMapTile mapTile, Vector2Int gridPosition)
+        public void InitTile(BaseMapTileData mapTileData, Vector2Int gridPosition)
         {
             GridPosition = gridPosition;
             
-            _mapTile = mapTile;
-            _spriteRenderer.sprite = _mapTile.TileSprite;
+            _mapTileData = mapTileData;
+            _spriteRenderer.sprite = _mapTileData.MapElementSprite;
         }
         
-        public void UpdateTile(BaseMapTile newMapTileData)
+        public void UpdateTile(BaseMapTileData newMapTileDataData)
         {
-            _mapTile = newMapTileData;
-            _spriteRenderer.sprite = _mapTile.TileSprite;
+            _mapTileData = newMapTileDataData;
+            _spriteRenderer.sprite = _mapTileData.MapElementSprite;
+            ResetSlot();
+        }
+
+        public void SetElementOnSlot(BaseUnitData unitData)
+        {
+            _slotUnitData = unitData;
+            _slotElement.sprite = _slotUnitData.MapElementSprite;
+        }
+
+        public void ResetSlot()
+        {
+            _slotUnitData = null;
+            _slotElement.sprite = null;
         }
 
         public void SetColor(Color colorToSet)
         {
-            _spriteRenderer.color = colorToSet;
+            _selector.color = colorToSet;
         }
     }
 }

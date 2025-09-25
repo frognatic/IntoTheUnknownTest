@@ -5,29 +5,43 @@ namespace IntoTheUnknownTest.Managers
 {
     public class EditMapManager : Singleton<EditMapManager>
     {
-        private BaseMapTile _selectedTile;
+        private IMapElement _selectedMapElement;
 
         protected override void Awake()
         {
             base.Awake();
             
-            _selectedTile = null;
+            _selectedMapElement = null;
         }
         
-        public void SelectTile(BaseMapTile tile)
+        public void SelectTile(IMapElement tileData)
         {
-            _selectedTile = tile;
+            _selectedMapElement = tileData;
         }
 
         public void HandleTileEditClick(MapTile clickedTile)
         {
-            ReplaceTile(clickedTile);
+            if (_selectedMapElement is BaseMapTileData selectedTileData)
+            {
+                ReplaceTile(clickedTile, selectedTileData);
+            }
+
+            if (_selectedMapElement is BaseUnitData selectedUnitData)
+            {
+                PlaceUnit(clickedTile, selectedUnitData);
+            }
         }
 
-        private void ReplaceTile(MapTile clickedTile)
+        private void ReplaceTile(MapTile clickedTile, BaseMapTileData selectedTileData)
         {
             Vector2Int gridPosition = clickedTile.GridPosition;
-            MapTileManager.Instance.TryUpdateTileAt(gridPosition, _selectedTile);
+            MapTileManager.Instance.TryUpdateTileAt(gridPosition, selectedTileData);
+        }
+
+        private void PlaceUnit(MapTile clickedTile, BaseUnitData selectedUnitData)
+        {
+            Vector2Int gridPosition = clickedTile.GridPosition;
+            MapTileManager.Instance.TryUpdateSlotAtTile(gridPosition, selectedUnitData);
         }
     }
 }

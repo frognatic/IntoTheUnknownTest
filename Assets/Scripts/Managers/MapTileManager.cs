@@ -25,7 +25,7 @@ namespace IntoTheUnknownTest.Managers
         
         private const int _defaultMapTilePoolSize = 100;
         
-        public List<BaseMapTile> MapTiles => _mapTileLibrary.MapTiles;
+        public List<BaseMapTileData> MapTiles => _mapTileLibrary.MapTiles;
         
         private void Start()
         {
@@ -51,11 +51,11 @@ namespace IntoTheUnknownTest.Managers
             
             foreach (var node in pathfindingGrid.Grid)
             {
-                BaseMapTile tileData = _mapTileLibrary.DefaultMapTile;
+                BaseMapTileData tileDataData = _mapTileLibrary.DefaultMapTileData;
 
                 MapTile mapTile = PoolingManager.Instance.Get<MapTile>(PoolObjectType.MapTiles);
                 mapTile.transform.position = node.WorldPosition;
-                mapTile.InitTile(tileData, node.GridPosition);
+                mapTile.InitTile(tileDataData, node.GridPosition);
         
                 _mapTiles.Add(node.GridPosition, mapTile);
             }
@@ -110,16 +110,29 @@ namespace IntoTheUnknownTest.Managers
             _previousPathTiles.Add(startTileObject);
         }
         
-        public void TryUpdateTileAt(Vector2Int  gridPosition, BaseMapTile newTileData)
+        public void TryUpdateTileAt(Vector2Int gridPosition, BaseMapTileData newTileDataData)
         {
             if (_mapTiles.TryGetValue(gridPosition, out MapTile tileToUpdate))
             {
-                tileToUpdate.UpdateTile(newTileData);
+                tileToUpdate.UpdateTile(newTileDataData);
 
                 var pathfindingGrid = PathfindingManager.Instance.GetPathfindingGrid();
                 PathfindingNode nodeToUpdate = pathfindingGrid.GetNode(gridPosition);
 
-                nodeToUpdate?.SetWalkable(newTileData.IsWalkable);
+                nodeToUpdate?.SetWalkable(newTileDataData.IsWalkable);
+            }
+        }
+
+        public void TryUpdateSlotAtTile(Vector2Int gridPosition, BaseUnitData newUnitData)
+        {
+            if (_mapTiles.TryGetValue(gridPosition, out MapTile tileToUpdate))
+            {
+                tileToUpdate.SetElementOnSlot(newUnitData);
+
+                var pathfindingGrid = PathfindingManager.Instance.GetPathfindingGrid();
+                PathfindingNode nodeToUpdate = pathfindingGrid.GetNode(gridPosition);
+
+                nodeToUpdate?.SetWalkable(false);
             }
         }
         

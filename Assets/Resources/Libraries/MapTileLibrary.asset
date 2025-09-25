@@ -16,4 +16,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 29f07206d8fdea249b4bd04e4c06f6a1, type: 2}
   - {fileID: 11400000, guid: a4bc5bfafa2d61844abaa7f3ac02fa99, type: 2}
   - {fileID: 11400000, guid: bd7bda831b58d4c44b717986239faba5, type: 2}
-  _defaultMapTile: {fileID: 11400000, guid: bd7bda831b58d4c44b717986239faba5, type: 2}
+  _defaultMapTileData: {fileID: 11400000, guid: bd7bda831b58d4c44b717986239faba5, type: 2}

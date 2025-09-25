@@ -18,8 +18,8 @@ namespace IntoTheUnknownTest.Map
 
             foreach (var node in pathfindingGrid.Grid)
             {
-                BaseMapTile tileData = _mapTileLibrary.DefaultMapTile;
-                node.SetWalkable(tileData.IsWalkable);
+                BaseMapTileData tileDataData = _mapTileLibrary.DefaultMapTileData;
+                node.SetWalkable(tileDataData.IsWalkable);
             }
         }
     }

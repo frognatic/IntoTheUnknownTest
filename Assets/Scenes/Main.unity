@@ -154,6 +154,7 @@ Transform:
   - {fileID: 709114702}
   - {fileID: 906642537}
   - {fileID: 137899049}
+  - {fileID: 2077936213}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &137899048
@@ -910,6 +911,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2077936212
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2077936213}
+  - component: {fileID: 2077936214}
+  m_Layer: 0
+  m_Name: UnitManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2077936213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2077936212}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 119946993}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2077936214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2077936212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e68e114b200b6424b9cd4f04ce9290b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unitsLibrary: {fileID: 11400000, guid: e9a70316fcbbf8c43980c841009e816d, type: 2}
 --- !u!1 &135390912047646495
 GameObject:
   m_ObjectHideFlags: 0
@@ -1772,8 +1818,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _backButton: {fileID: 294648977453216097}
-  _mapTileSelectorPrefab: {fileID: 7629197598229795665, guid: 7d13b51ff40323b4da6bdb91ad401851, type: 3}
-  _mapTileSelectorContent: {fileID: 1140160078568916790}
+  _editMapItemSelectorPrefab: {fileID: 6579844726715597016, guid: 7d13b51ff40323b4da6bdb91ad401851, type: 3}
+  _selectorsContent: {fileID: 1140160078568916790}
 --- !u!222 &3505971595198267690
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b7774f299c514c4a806304a4d7d0945, type: 3}
   m_Name: CoverMapTile
   m_EditorClassIdentifier: 
-  _id: 
-  _tileSprite: {fileID: 21300000, guid: a9b4b3fbce78d154bbbe59754601ea54, type: 3}
+  _id: Cover
+  _mapElementSprite: {fileID: 21300000, guid: a9b4b3fbce78d154bbbe59754601ea54, type: 3}
