@@ -23,6 +23,8 @@ namespace IntoTheUnknownTest.Managers
 
         public void HandleTileEditClick(MapTile clickedTile)
         {
+            if (_selectedMapElement == null) return;
+            
             ClearPreviousPositionOfUniqueElement();
             TryUpdateTile(clickedTile, _selectedMapElement);
             TryCacheUniqueElement(clickedTile);
@@ -30,7 +32,7 @@ namespace IntoTheUnknownTest.Managers
 
         private void ClearPreviousPositionOfUniqueElement()
         {
-            if (!_selectedMapElement.IsUniqueOnMap) return;
+            if (_selectedMapElement == null || !_selectedMapElement.IsUniqueOnMap) return;
             
             if (_uniqueElementPositions.TryGetValue(_selectedMapElement, out MapTile previousTile))
             {

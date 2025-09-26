@@ -8,6 +8,11 @@ namespace IntoTheUnknownTest.Managers
         public bool IsEditMode => _gameState == GameState.Edit;
         public bool IsPlayMode => _gameState == GameState.Play;
 
+        public void SetGameStateToMenu()
+        {
+            _gameState = GameState.Menu;
+        }
+        
         public void SetGameStateToEdit()
         {
             _gameState = GameState.Edit;

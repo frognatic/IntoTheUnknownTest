@@ -1,3 +1,4 @@
+using IntoTheUnknownTest.Managers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,7 @@ namespace IntoTheUnknownTest.UI
         protected virtual void OnBackButtonClicked()
         {
             Hide();
+            StateManager.Instance.SetGameStateToMenu();
         }
     }
 }
