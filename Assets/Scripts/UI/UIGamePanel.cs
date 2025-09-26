@@ -1,13 +1,13 @@
-using UnityEngine;
+using IntoTheUnknownTest.Managers;
 
 namespace IntoTheUnknownTest.UI
 {
     public class UIGamePanel : UIBasePanel
     {
-        public override void Show()
+        protected override void OnBackButtonClicked()
         {
-            base.Show();
-            
+            base.OnBackButtonClicked();
+            MapTileManager.Instance.ClearPreviousPathHighlight();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using IntoTheUnknownTest.Libraries;
@@ -10,8 +11,6 @@ namespace IntoTheUnknownTest.Managers
     public class MapTileManager : Singleton<MapTileManager>
     {
         [SerializeField] private MapTileLibrary _mapTileLibrary;
-        [SerializeField] private int _movementRange = 4;
-        
         [SerializeField] private Transform _mapTileContent;
         
         [Header("Colors")]
@@ -21,9 +20,8 @@ namespace IntoTheUnknownTest.Managers
         [SerializeField] private Color _defaultTileColor = Color.white;
         
         private List<MapTile> _previousPathTiles = new List<MapTile>();
-        private Dictionary<Vector2Int, MapTile> _mapTiles = new Dictionary<Vector2Int, MapTile>();
-        
-        private PlayerUnitData _playerUnitData;
+        private Tuple<MapTile, PlayerUnitData> _playerUnitData;
+        private readonly Dictionary<Vector2Int, MapTile> _mapTiles = new Dictionary<Vector2Int, MapTile>();
         
         private const int _defaultMapTilePoolSize = 100;
         
@@ -67,9 +65,11 @@ namespace IntoTheUnknownTest.Managers
         public void HandlePathfindingRequest(Vector3 targetPosition)
         {
             ClearPreviousPathHighlight();
+            
+            if (_playerUnitData == null) return;
             if (_mapTiles.Any())
             {
-                MapTile startTileObject = _mapTiles.First().Value;
+                MapTile startTileObject = _playerUnitData.Item1;
                 startTileObject.SetColor(_defaultTileColor);
                 Vector3 startPosition = startTileObject.transform.position;
             
@@ -77,13 +77,13 @@ namespace IntoTheUnknownTest.Managers
 
                 if (path != null && path.Count > 0)
                 {
-                    HighlightPath(path, startTileObject);
+                    HighlightPath(path, startTileObject, _playerUnitData.Item2.MoveRange);
                     Debug.LogWarning($"PATH COST: {path.Count}");
                 }
             }
         }
 
-        private void ClearPreviousPathHighlight()
+        public void ClearPreviousPathHighlight()
         {
             foreach (var tile in _previousPathTiles)
             {
@@ -95,7 +95,7 @@ namespace IntoTheUnknownTest.Managers
             _previousPathTiles.Clear();
         }
 
-        private void HighlightPath(List<Vector3> path, MapTile startTileObject)
+        private void HighlightPath(List<Vector3> path, MapTile startTileObject, int actionRange)
         {
             var tilesOnPath = GetTilesByPositions(path);
 
@@ -104,7 +104,7 @@ namespace IntoTheUnknownTest.Managers
                 MapTile currentTile = tilesOnPath[i];
 
                 int stepsToTile = i + 1;
-                currentTile.SetColor(stepsToTile <= _movementRange ? _inRangeColor : _outOfRangeColor);
+                currentTile.SetColor(stepsToTile <= actionRange ? _inRangeColor : _outOfRangeColor);
             }
 
             startTileObject.SetColor(_startTileColor);
@@ -143,7 +143,7 @@ namespace IntoTheUnknownTest.Managers
                     tileToUpdate.SetElementOnSlot(selectedUnitData);
                     if (selectedUnitData is PlayerUnitData playerUnitData)
                     {
-                        _playerUnitData = playerUnitData;
+                        _playerUnitData = new Tuple<MapTile, PlayerUnitData>(tileToUpdate, playerUnitData);
                     }
                     break;
             }
