@@ -21,6 +21,8 @@ namespace IntoTheUnknownTest
             
             _mapTileData = mapTileData;
             _spriteRenderer.sprite = _mapTileData.MapElementSprite;
+            
+            ResetSlot();
         }
         
         public void UpdateTile(BaseMapTileData newMapTileDataData)

@@ -30,6 +30,11 @@ namespace IntoTheUnknownTest.UI
             StateManager.Instance.SetGameStateToPlay();
         }
 
+        public void OnFillRandomGridButtonClicked()
+        {
+            GridRandomFillManager.Instance.GenerateRandomElements();
+        }
+
         public void OnRebuildGridButtonClicked()
         {
             MapTileManager.Instance.GenerateGridAndTiles();
