@@ -7,17 +7,24 @@ namespace IntoTheUnknownTest.Managers
     public enum PoolObjectType
     {
         MapTiles,
+        Units
     }
     
     public class PoolingManager : Singleton<PoolingManager>
     {
         [SerializeField] private MapTile _mapTilePrefab;
+        [SerializeField] private MapTileUnit _mapTileUnitPrefab;
         
         private readonly Dictionary<PoolObjectType, object> _poolsDictionary = new();
-
+        
         public void PrepareMapTiles(Transform parent, int poolSize)
         {
             CreatePool(PoolObjectType.MapTiles, _mapTilePrefab, poolSize, parent.transform);
+        }
+
+        public void PrepareUnits(Transform parent, int poolSize)
+        {
+            CreatePool(PoolObjectType.Units, _mapTileUnitPrefab, poolSize, parent.transform);
         }
         
         public void CleanupAllPoolObjects()

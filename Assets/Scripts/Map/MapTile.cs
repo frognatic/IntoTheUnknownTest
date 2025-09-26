@@ -8,11 +8,14 @@ namespace IntoTheUnknownTest
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private SpriteRenderer _selector;
-        [SerializeField] private MapTileUnit _mapTileUnit;
         
         public Vector2Int GridPosition { get; private set; }
+        public MapTileUnit OccupyingUnit { get; set; }
         
         private BaseMapTileData _mapTileData;
+        
+        public bool IsWalkable => _mapTileData.IsWalkable;
+        public bool IsAttackableThrough => _mapTileData.IsAttackableThrough;
 
         public void InitTile(BaseMapTileData mapTileData, Vector2Int gridPosition)
         {
@@ -20,26 +23,19 @@ namespace IntoTheUnknownTest
             
             _mapTileData = mapTileData;
             _spriteRenderer.sprite = _mapTileData.MapElementSprite;
-            
-            ResetSlot();
+
+            OccupyingUnit = null;
         }
         
         public void UpdateTile(BaseMapTileData newMapTileDataData)
         {
             _mapTileData = newMapTileDataData;
             _spriteRenderer.sprite = _mapTileData.MapElementSprite;
-            ResetSlot();
-        }
-
-        public void SetElementOnSlot(BaseUnitData unitData)
-        {
-            UpdateTile(MapTileManager.Instance.DefaultMapTileData);
-            _mapTileUnit.SetUnit(unitData);
-        }
-
-        public void ResetSlot()
-        {
-            _mapTileUnit.ResetSlot();
+            
+            if (OccupyingUnit != null)
+            {
+                UnitManager.Instance.DespawnUnit(OccupyingUnit);
+            }
         }
 
         public void SetColor(Color colorToSet)

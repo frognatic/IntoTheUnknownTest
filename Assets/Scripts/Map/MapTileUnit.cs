@@ -6,19 +6,21 @@ namespace IntoTheUnknownTest
     public class MapTileUnit : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer _unitSpriteRenderer;
-
-        private BaseUnitData _unitData;
         
-        public void SetUnit(BaseUnitData unitData)
+        public MapTile CurrentTile { get; private set; }
+        public BaseUnitData UnitData { get; private set; }
+        
+        public void Setup(BaseUnitData unitData, MapTile mapTile)
         {
-            _unitData = unitData;
+            CurrentTile = mapTile;
+            UnitData  = unitData;
             _unitSpriteRenderer.sprite = unitData.MapElementSprite;
+            transform.position = mapTile.transform.position;
         }
-
-        public void ResetSlot()
+        
+        public void SetCurrentTile(MapTile newTile)
         {
-            _unitData = null;
-            _unitSpriteRenderer.sprite = null;
+            CurrentTile = newTile;
         }
     }
 }

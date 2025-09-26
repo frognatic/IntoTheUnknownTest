@@ -55,7 +55,11 @@ namespace IntoTheUnknownTest.Managers
             
             if (hit.collider != null)
             {
-                _currentState.HandleRaycastClick(hit);
+                MapTile clickedTile = hit.collider.GetComponent<MapTile>();
+                if (clickedTile != null)
+                {
+                    _currentState.HandleRaycastClick(clickedTile);    
+                }
             }
         }
     }

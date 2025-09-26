@@ -1,13 +1,12 @@
 using IntoTheUnknownTest.Managers;
-using UnityEngine;
 
 namespace IntoTheUnknownTest.States
 {
     public class PlayModeInputState : IInputState
     {
-        public void HandleRaycastClick(RaycastHit2D hit)
+        public void HandleRaycastClick(MapTile mapTile)
         {
-            MapTileManager.Instance.HandlePathfindingRequest(hit.point);
+            MapTileManager.Instance.HandlePathfindingRequest(mapTile);
         }
 
         public void OnEnter() {}

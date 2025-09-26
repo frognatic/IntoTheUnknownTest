@@ -1,6 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
 using IntoTheUnknownTest.Libraries;
 using IntoTheUnknownTest.Map;
+using IntoTheUnknownTest.Pathfinding;
 using UnityEngine;
 
 namespace IntoTheUnknownTest.Managers
@@ -9,52 +13,91 @@ namespace IntoTheUnknownTest.Managers
     {
         [SerializeField] private UnitsLibrary _unitsLibrary;
         
+        private const float _moveDurationPerTile = 0.3f;
+        private readonly List<MapTileUnit> _activeUnits = new List<MapTileUnit>();
+        
+        public MapTileUnit PlayerUnit { get; private set; }
         public List<BaseUnitData> Units => _unitsLibrary.BaseUnits;
         
-        // private IEnumerator MoveUnitAlongPath()
-        // {
-        //     _isMoving = true; // Zablokuj input
-        //
-        //     MapTile startTile = _playerUnitData.Item1;
-        //     PlayerUnitData unitData = _playerUnitData.Item2;
-        //     Transform unitTransform = _playerUnitData.Item3; // Pobierz Transform jednostki
-        //
-        //     // Wyczyść podświetlenie ścieżki przed ruchem
-        //     ClearPreviousPathHighlight();
-        //
-        //     // Stwórz sekwencję ruchów w DOTween
-        //     Sequence moveSequence = DOTween.Sequence();
-        //     float moveDurationPerTile = 0.3f; // Czas na przejście jednego kafelka
-        //
-        //     foreach (var position in _currentHighlightedPath)
-        //     {
-        //         // Dodaj do sekwencji ruch do kolejnego punktu na ścieżce
-        //         moveSequence.Append(unitTransform.DOMove(position, moveDurationPerTile).SetEase(Ease.Linear));
-        //     }
-        //
-        //     // Poczekaj, aż cała animacja się zakończy
-        //     yield return moveSequence.WaitForCompletion();
-        //
-        //     // --- LOGIKA PO ZAKOŃCZENIU RUCHU ---
-        //
-        //     // 1. Zaktualizuj dane
-        //     // Pobierz nowy kafelek, na którym stoi jednostka
-        //     PathfindingNode finalNode = PathfindingManager.Instance.GetNode(_currentHighlightedPath.Last());
-        //     MapTile newTile = _mapTiles[finalNode.GridPosition];
-        //
-        //     // 2. Podmień stary kafelek na domyślny
-        //     startTile.SetElementOnSlot(null); // Usuń jednostkę ze starego kafelka (wizualnie)
-        //     // Jeśli masz osobne dane dla "pustego" tile'a, użyj `UpdateTile`
-        //     // startTile.UpdateTile(DefaultMapTileData);
-        //
-        //     // 3. Ustaw jednostkę na nowym kafelku (logicznie)
-        //     newTile.SetElementOnSlot(unitData);
-        //
-        //     // 4. Zaktualizuj referencję w menedżerze
-        //     _playerUnitData = new Tuple<MapTile, PlayerUnitData, Transform>(newTile, unitData, unitTransform);
-        //
-        //     // 5. Odblokuj input
-        //     _isMoving = false;
-        // }
+        public void SpawnUnit(BaseUnitData unitData, MapTile targetTile)
+        {
+            if (targetTile.OccupyingUnit != null) return;
+
+            if (unitData.IsUniqueOnMap)
+            {
+                var existingUnit = _activeUnits.FirstOrDefault(u => u.UnitData == unitData);
+                if (existingUnit != null)
+                {
+                    DespawnUnit(existingUnit);
+                }
+            }
+
+            MapTileUnit newUnit = PoolingManager.Instance.Get<MapTileUnit>(PoolObjectType.Units);
+            newUnit.Setup(unitData, targetTile);
+
+            targetTile.OccupyingUnit = newUnit;
+            _activeUnits.Add(newUnit);
+
+            if (unitData is PlayerUnitData)
+            {
+                PlayerUnit = newUnit;
+            }
+        }
+        
+        public void DespawnUnit(MapTileUnit unitToDespawn)
+        {
+            if (unitToDespawn == null) return;
+
+            if (unitToDespawn.CurrentTile != null)
+            {
+                unitToDespawn.CurrentTile.OccupyingUnit = null;
+            }
+            
+            _activeUnits.Remove(unitToDespawn);
+            PoolingManager.Instance.ReturnToPool(PoolObjectType.Units, unitToDespawn);
+            
+            if (unitToDespawn == PlayerUnit)
+            {
+                PlayerUnit = null;
+            }
+        }
+        
+        public void MoveUnitAlongPath(MapTileUnit unitToMove, List<Vector3> path)
+        {
+            StartCoroutine(MoveUnitCoroutine(unitToMove, path));
+        }
+        
+        private IEnumerator MoveUnitCoroutine(MapTileUnit unitToMove, List<Vector3> path)
+        {
+            MapTileManager.Instance.LockInput();
+            
+            MapTile currentTile = unitToMove.CurrentTile;
+
+            foreach (var targetPosition in path)
+            {
+                PathfindingNode nextNode = PathfindingManager.Instance.GetNode(targetPosition);
+                if (!MapTileManager.Instance.TryGetTile(nextNode.GridPosition, out MapTile nextTile)) break;
+                
+                Tween moveTween = unitToMove.transform.DOMove(targetPosition, _moveDurationPerTile).SetEase(Ease.Linear);
+                yield return moveTween.WaitForCompletion();
+                
+                currentTile.OccupyingUnit = null; 
+                nextTile.OccupyingUnit = unitToMove;
+                unitToMove.SetCurrentTile(nextTile);
+                currentTile = nextTile;
+            }
+            
+            MapTileManager.Instance.UnlockInput();
+        }
+        
+        public void ClearAllUnits()
+        {
+            var unitsToClear = new List<MapTileUnit>(_activeUnits);
+            foreach (var unit in unitsToClear)
+            {
+                DespawnUnit(unit);
+            }
+            _activeUnits.Clear();
+        }
     }
 }

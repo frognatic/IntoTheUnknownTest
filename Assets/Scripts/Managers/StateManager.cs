@@ -3,7 +3,7 @@ namespace IntoTheUnknownTest.Managers
 {
     public class StateManager : Singleton<StateManager>
     {
-        public GameState _gameState = GameState.Menu;
+        private GameState _gameState = GameState.Menu;
         
         public bool IsMenu => _gameState == GameState.Menu;
         public bool IsEditMode => _gameState == GameState.Edit;

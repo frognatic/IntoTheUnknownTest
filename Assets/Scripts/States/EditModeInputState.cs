@@ -1,16 +1,14 @@
 using IntoTheUnknownTest.Managers;
-using UnityEngine;
 
 namespace IntoTheUnknownTest.States
 {
     public class EditModeInputState : IInputState
     {
-        public void HandleRaycastClick(RaycastHit2D hit)
+        public void HandleRaycastClick(MapTile mapTile)
         {
-            MapTile clickedTile = hit.collider.GetComponent<MapTile>();
-            if (clickedTile != null)
+            if (mapTile != null)
             {
-                EditMapManager.Instance.HandleTileEditClick(clickedTile);
+                EditMapManager.Instance.HandleTileEditClick(mapTile);
             }
         }
 

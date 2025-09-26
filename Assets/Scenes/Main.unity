@@ -248,6 +248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mapTileLibrary: {fileID: 11400000, guid: fd1cf15e755e8e846adf5c95002c8735, type: 2}
   _mapTileContent: {fileID: 735776706}
+  _unitsContent: {fileID: 820549138}
   _startTileColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 0.47058824}
   _inRangeColor: {r: 0, g: 1, b: 0, a: 0.47058824}
   _outOfRangeColor: {r: 1, g: 0, b: 0, a: 0.47058824}
@@ -555,6 +556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mapTilePrefab: {fileID: 7259294364850039961, guid: ce4a02d002d3b2f4185bc2c68b41f4c6, type: 3}
+  _mapTileUnitPrefab: {fileID: 673697557122090080, guid: 0d1011cce1bc3ae40abd89f27a53b5e6, type: 3}
 --- !u!1 &709114701
 GameObject:
   m_ObjectHideFlags: 0
@@ -820,6 +822,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gridFillPatternLibrary: {fileID: 11400000, guid: 8a7ec451e25ab0a48a5cd3c76e4f3c5a, type: 2}
+--- !u!1 &820549137
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 820549138}
+  m_Layer: 0
+  m_Name: MapUnits
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &820549138
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820549137}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1348734314}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -988,6 +1021,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 735776706}
+  - {fileID: 820549138}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1583100177
