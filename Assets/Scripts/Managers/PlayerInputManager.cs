@@ -48,6 +48,7 @@ namespace IntoTheUnknownTest.Managers
         private void HandleMouseClick()
         {
             if (_currentState == null) return;
+            if (StateManager.Instance.IsMenu) return;
 
             Vector2 mouseWorldPosition = _camera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero);

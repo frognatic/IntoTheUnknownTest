@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using IntoTheUnknownTest.Map;
 using UnityEngine;
 
@@ -24,10 +25,21 @@ namespace IntoTheUnknownTest.Managers
         public void HandleTileEditClick(MapTile clickedTile)
         {
             if (_selectedMapElement == null) return;
-            
+
+            ClearUniqueElementIfOverwritten(clickedTile);
             ClearPreviousPositionOfUniqueElement();
             TryUpdateTile(clickedTile, _selectedMapElement);
             TryCacheUniqueElement(clickedTile);
+        }
+
+        private void ClearUniqueElementIfOverwritten(MapTile clickedTile)
+        {
+            var existingEntry = _uniqueElementPositions.FirstOrDefault(kvp => kvp.Value == clickedTile);
+            
+            if (existingEntry.Key != null)
+            {
+                _uniqueElementPositions.Remove(existingEntry.Key);
+            }
         }
 
         private void ClearPreviousPositionOfUniqueElement()

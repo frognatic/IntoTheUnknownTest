@@ -7,13 +7,12 @@ namespace IntoTheUnknownTest
     public class MapTile : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
-        [SerializeField] private SpriteRenderer _slotElement;
         [SerializeField] private SpriteRenderer _selector;
+        [SerializeField] private MapTileUnit _mapTileUnit;
         
         public Vector2Int GridPosition { get; private set; }
         
         private BaseMapTileData _mapTileData;
-        private BaseUnitData _slotUnitData;
 
         public void InitTile(BaseMapTileData mapTileData, Vector2Int gridPosition)
         {
@@ -35,15 +34,12 @@ namespace IntoTheUnknownTest
         public void SetElementOnSlot(BaseUnitData unitData)
         {
             UpdateTile(MapTileManager.Instance.DefaultMapTileData);
-            
-            _slotUnitData = unitData;
-            _slotElement.sprite = _slotUnitData.MapElementSprite;
+            _mapTileUnit.SetUnit(unitData);
         }
 
         public void ResetSlot()
         {
-            _slotUnitData = null;
-            _slotElement.sprite = null;
+            _mapTileUnit.ResetSlot();
         }
 
         public void SetColor(Color colorToSet)
