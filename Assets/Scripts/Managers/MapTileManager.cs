@@ -12,43 +12,48 @@ namespace IntoTheUnknownTest.Managers
         [SerializeField] private MapTileLibrary _mapTileLibrary;
         [SerializeField] private Transform _mapTileContent;
         [SerializeField] private Transform _unitsContent;
-        
+
         [Header("Colors")]
         [SerializeField] private Color _startTileColor = Color.yellow;
         [SerializeField] private Color _inRangeColor = Color.green;
         [SerializeField] private Color _outOfRangeColor = Color.red;
         [SerializeField] private Color _defaultTileColor = Color.white;
-        
+
         private const int _defaultMapTilePoolSize = 100;
         private const int _defaultUnitPoolSize = 5;
-        
+
         private List<MapTile> _previousPathTiles = new List<MapTile>();
         private readonly Dictionary<Vector2Int, MapTile> _mapTiles = new Dictionary<Vector2Int, MapTile>();
 
         private bool _isAnyActionActive = false;
         private MapTile _currentTargetTile = null;
         
-        private List<Vector3> _currentHighlightedPath = new List<Vector3>();
-        
+        private IActionState _currentActionState;
+
         public List<BaseMapTileData> MapTiles => _mapTileLibrary.MapTiles;
         public BaseMapTileData DefaultMapTileData => _mapTileLibrary.DefaultMapTileData;
-        
+
         private void Start()
+        {
+            InitializePools();
+            GenerateGridAndTiles();
+        }
+
+        private void InitializePools()
         {
             PoolingManager.Instance.PrepareMapTiles(_mapTileContent, _defaultMapTilePoolSize);
             PoolingManager.Instance.PrepareUnits(_unitsContent, _defaultUnitPoolSize);
-            GenerateGridAndTiles();
         }
-        
+
         public void GenerateGridAndTiles()
         {
             ReturnAllPooledMapElements();
-    
+
             var pathfindingGrid = PathfindingManager.Instance.GetPathfindingGrid();
-            
+
             MapGenerator generator = new MapGenerator(_mapTileLibrary);
             generator.GenerateGridData(pathfindingGrid);
-            
+
             foreach (var node in pathfindingGrid.Grid)
             {
                 BaseMapTileData tileDataData = _mapTileLibrary.DefaultMapTileData;
@@ -56,7 +61,7 @@ namespace IntoTheUnknownTest.Managers
                 MapTile mapTile = PoolingManager.Instance.Get<MapTile>(PoolObjectType.MapTiles);
                 mapTile.transform.position = node.WorldPosition;
                 mapTile.InitTile(tileDataData, node.GridPosition);
-        
+
                 _mapTiles.Add(node.GridPosition, mapTile);
             }
         }
@@ -73,53 +78,51 @@ namespace IntoTheUnknownTest.Managers
             }
             _mapTiles.Clear();
         }
-        
+
         public void LockInput() => _isAnyActionActive = true;
         public void UnlockInput() => _isAnyActionActive = false;
-        
-        public void HandlePathfindingRequest(MapTile targetMapTile)
+
+        public void HandleActionRequest(MapTile clickedTile)
         {
             if (_isAnyActionActive) return;
 
             var playerUnit = UnitManager.Instance.PlayerUnit;
             if (playerUnit == null) return;
-
-            var playerUnitData = playerUnit.UnitData as PlayerUnitData;
-            if (playerUnitData == null) return;
             
-            if (_currentTargetTile != null && targetMapTile == _currentTargetTile)
+            if (_currentActionState != null && clickedTile == _currentTargetTile)
             {
-                if (_currentHighlightedPath.Count > 0 && _currentHighlightedPath.Count <= playerUnitData.MoveRange)
-                {
-                    UnitManager.Instance.MoveUnitAlongPath(playerUnit, _currentHighlightedPath);
-                    SetDefaultColorsForPreviousPath();
-                }
+                _currentActionState.PerformAction();
+                return;
             }
-            else
-            {
-                ClearPreviousPathHighlight();
-            
-                MapTile startTileObject = playerUnit.CurrentTile;
-                Vector3 startPosition = startTileObject.transform.position;
-                Vector3 targetPosition = targetMapTile.transform.position;
-    
-                var path = PathfindingManager.Instance.FindPath(startPosition, targetPosition);
 
-                if (path != null && path.Count > 0)
-                {
-                    HighlightPath(path, startTileObject, playerUnitData.MoveRange);
-                    _currentHighlightedPath = path;
-                    _currentTargetTile = targetMapTile;
-                }
-            }
+            PrepareNewAction(clickedTile, playerUnit);
+        }
+
+        private void PrepareNewAction(MapTile clickedTile, MapTileUnit playerUnit)
+        {
+            ClearActionState();
+            _currentTargetTile = clickedTile;
+
+            bool isEnemyClicked = clickedTile.OccupyingUnit?.UnitData is EnemyUnitData;
+
+            _currentActionState = isEnemyClicked 
+                ? new AttackActionState(this) 
+                : new MoveActionState(this);
+            
+            _currentActionState.OnEnter(_currentTargetTile, playerUnit);
+        }
+        
+        public void ClearActionState()
+        {
+            _currentActionState?.OnExit();
+            _currentActionState = null;
+            _currentTargetTile = null;
         }
 
         public void ClearPreviousPathHighlight()
         {
             SetDefaultColorsForPreviousPath();
             _previousPathTiles.Clear();
-            _currentHighlightedPath.Clear();
-            _currentTargetTile = null;
         }
 
         private void SetDefaultColorsForPreviousPath()
@@ -132,13 +135,13 @@ namespace IntoTheUnknownTest.Managers
                 }
             }
         }
-        
+
         public bool TryGetTile(Vector2Int gridPosition, out MapTile tile)
         {
             return _mapTiles.TryGetValue(gridPosition, out tile);
         }
 
-        private void HighlightPath(List<Vector3> path, MapTile startTileObject, int actionRange)
+        public void HighlightPath(List<Vector3> path, MapTile startTileObject, int actionRange)
         {
             var tilesOnPath = GetTilesByPositions(path);
 
@@ -151,7 +154,7 @@ namespace IntoTheUnknownTest.Managers
             }
 
             startTileObject.SetColor(_startTileColor);
-                
+
             _previousPathTiles = tilesOnPath;
             _previousPathTiles.Add(startTileObject);
         }
@@ -183,7 +186,7 @@ namespace IntoTheUnknownTest.Managers
                     break;
             }
         }
-        
+
         private List<MapTile> GetTilesByPositions(List<Vector3> positions)
         {
             List<MapTile> result = new List<MapTile>();

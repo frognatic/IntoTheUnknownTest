@@ -20,6 +20,7 @@ namespace IntoTheUnknownTest.Map
             {
                 BaseMapTileData tileDataData = _mapTileLibrary.DefaultMapTileData;
                 node.SetWalkable(tileDataData.IsWalkable);
+                node.SetAttackableThrough(tileDataData.IsAttackableThrough);
             }
         }
     }

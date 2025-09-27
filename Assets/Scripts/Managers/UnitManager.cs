@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,10 @@ namespace IntoTheUnknownTest.Managers
     {
         [SerializeField] private UnitsLibrary _unitsLibrary;
         
-        private const float _moveDurationPerTile = 0.3f;
         private readonly List<MapTileUnit> _activeUnits = new List<MapTileUnit>();
+        private const float _moveDurationPerTile = 0.3f;
+        private const float _attackLungeAnimationDistance = 0.5f;
+        private const float _attackAnimationDuration = 0.15f;
         
         public MapTileUnit PlayerUnit { get; private set; }
         public List<BaseUnitData> Units => _unitsLibrary.BaseUnits;
@@ -62,12 +65,12 @@ namespace IntoTheUnknownTest.Managers
             }
         }
         
-        public void MoveUnitAlongPath(MapTileUnit unitToMove, List<Vector3> path)
+        public void MoveUnitAlongPath(MapTileUnit unitToMove, List<Vector3> path, Action onComplete = null)
         {
-            StartCoroutine(MoveUnitCoroutine(unitToMove, path));
+            StartCoroutine(MoveUnitCoroutine(unitToMove, path, onComplete));
         }
         
-        private IEnumerator MoveUnitCoroutine(MapTileUnit unitToMove, List<Vector3> path)
+        private IEnumerator MoveUnitCoroutine(MapTileUnit unitToMove, List<Vector3> path, Action onComplete = null)
         {
             MapTileManager.Instance.LockInput();
             
@@ -88,6 +91,35 @@ namespace IntoTheUnknownTest.Managers
             }
             
             MapTileManager.Instance.UnlockInput();
+            onComplete?.Invoke(); 
+        }
+        
+        public void AttackUnit(MapTileUnit attacker, MapTileUnit target, Action onComplete = null)
+        {
+            StartCoroutine(AttackCoroutine(attacker, target, onComplete));
+        }
+        
+        private IEnumerator AttackCoroutine(MapTileUnit attacker, MapTileUnit target, Action onComplete = null)
+        {
+            MapTileManager.Instance.LockInput();
+
+            Vector3 originalPosition = attacker.transform.position;
+            Vector3 targetPosition = target.transform.position;
+            Vector3 direction = (targetPosition - originalPosition).normalized;
+
+            Sequence attackSequence = DOTween.Sequence();
+            attackSequence.Append(attacker.transform.DOMove(originalPosition + direction * _attackLungeAnimationDistance, _attackAnimationDuration));
+            attackSequence.Append(attacker.transform.DOMove(originalPosition, _attackAnimationDuration));
+        
+            yield return attackSequence.WaitForCompletion();
+        
+            target.TakeDamage();
+
+            MapTileManager.Instance.ClearPreviousPathHighlight();
+            MapTileManager.Instance.UnlockInput();
+            yield return null;
+            
+            onComplete?.Invoke(); 
         }
         
         public void ClearAllUnits()

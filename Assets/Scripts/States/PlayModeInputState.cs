@@ -6,7 +6,7 @@ namespace IntoTheUnknownTest.States
     {
         public void HandleRaycastClick(MapTile mapTile)
         {
-            MapTileManager.Instance.HandlePathfindingRequest(mapTile);
+            MapTileManager.Instance.HandleActionRequest(mapTile);
         }
 
         public void OnEnter() {}

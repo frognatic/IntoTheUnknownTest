@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using IntoTheUnknownTest.Grid;
 using IntoTheUnknownTest.Pathfinding;
@@ -30,7 +31,7 @@ namespace IntoTheUnknownTest.Managers
 
         public PathfindingGrid GetPathfindingGrid() => _pathfindingGrid;
 
-        public List<Vector3> FindPath(Vector3 startPos, Vector3 targetPos)
+        public List<Vector3> FindPath(Vector3 startPos, Vector3 targetPos, Predicate<PathfindingNode> traversableCondition)
         {
             PathfindingNode startNode = GetNode(startPos);
             PathfindingNode targetNode = GetNode(targetPos);
@@ -50,7 +51,7 @@ namespace IntoTheUnknownTest.Managers
                     return CalculatedPath(startNode, targetNode);
                 }
 
-                CalculateMoveToNeighbourCosts(currentNode, targetNode);
+                CalculateMoveToNeighbourCosts(currentNode, targetNode, traversableCondition);
             }
 
             return null;
@@ -58,11 +59,11 @@ namespace IntoTheUnknownTest.Managers
 
         public PathfindingNode GetNode(Vector3 pos) => _pathfindingGrid.GetNode(pos);
 
-        private void CalculateMoveToNeighbourCosts(PathfindingNode currentNode, PathfindingNode targetNode)
+        private void CalculateMoveToNeighbourCosts(PathfindingNode currentNode, PathfindingNode targetNode, Predicate<PathfindingNode> traversableCondition)
         {
             foreach (PathfindingNode neighbour in _pathfindingGrid.GetNeighbours(currentNode, UseDiagonalMoveCalculations))
             {
-                if (!neighbour.IsWalkable || _closedSet.Contains(neighbour))
+                if (!traversableCondition(neighbour) && neighbour != targetNode || _closedSet.Contains(neighbour))
                     continue;
 
                 int costMovingToNeighbour = currentNode.GCost + CalculateDistanceCost(currentNode, neighbour);
@@ -75,9 +76,13 @@ namespace IntoTheUnknownTest.Managers
                     neighbour.SetPreviousNode(currentNode);
 
                     if (!isInOpenSet)
+                    {
                         _openSet.Enqueue(neighbour);
+                    }
                     else
+                    {
                         _openSet.UpdateItem(neighbour);
+                    }
                 }
             }
         }
