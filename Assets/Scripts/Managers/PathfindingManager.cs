@@ -35,7 +35,10 @@ namespace IntoTheUnknownTest.Managers
 
         private void OnDisable()
         {
-            MapTileManager.Instance.TileDataChanged -= OnTileDataChanged;
+            if (MapTileManager.Instance != null)
+            {
+                MapTileManager.Instance.TileDataChanged -= OnTileDataChanged;    
+            }
         }
         
         private void OnTileDataChanged(Vector2Int gridPosition, bool isWalkable, bool isAttackableThrough)

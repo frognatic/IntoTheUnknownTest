@@ -42,8 +42,11 @@ namespace IntoTheUnknownTest.Managers
 
         private void OnDisable()
         {
-            UnitManager.Instance.UnitActionStarted -= LockInput;
-            UnitManager.Instance.UnitActionEnded -= UnlockInput;
+            if (UnitManager.Instance != null)
+            {
+                UnitManager.Instance.UnitActionStarted -= LockInput;
+                UnitManager.Instance.UnitActionEnded -= UnlockInput;
+            }
         }
 
         private void InitializePools()
@@ -63,6 +66,7 @@ namespace IntoTheUnknownTest.Managers
 
             foreach (var node in pathfindingGrid.Grid)
             {
+                if (node == null) continue;
                 BaseMapTileData tileDataData = _mapTileLibrary.DefaultMapTileData;
 
                 MapTile mapTile = PoolingManager.Instance.Get<MapTile>(PoolObjectType.MapTiles);
@@ -156,8 +160,9 @@ namespace IntoTheUnknownTest.Managers
         {
             ClearPreviousPathHighlight();
 
-            ColorTiles(path, (_, index) => index + 1 <= actionRange ?
-                _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange) : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
+            ColorTiles(path, (_, index) => (index + 1) <= actionRange 
+                ? _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange) 
+                : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
 
             startTile.SetColor(_mapColorsLibrary.GetColorForAction(TileSelectorActionType.StartTile));
 
@@ -167,19 +172,19 @@ namespace IntoTheUnknownTest.Managers
         public void HighlightMoveAndAttackPath(List<PathfindingNode> movePath, List<PathfindingNode> attackPath, MapTile startTile, int moveRange, int attackRange, bool isSequenceValid)
         {
             ClearPreviousPathHighlight();
+            
+            if (movePath.Count == 0 && attackPath.Count == 0) return;
 
             ColorTiles(movePath, (_, index) => (index + 1) <= moveRange 
                 ? _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange)
                 : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
-            
-            bool canReachAttackPosition = movePath.Count <= moveRange;
-            ColorTiles(attackPath, (_, index) =>
-            {
-                bool isAttackStepInRange = (index + 1) <= attackRange;
-                return canReachAttackPosition && isAttackStepInRange ? _mapColorsLibrary.GetColorForAction(TileSelectorActionType.AttackPath)
-                    : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange);
-            });
-            
+
+            bool canAttack = isSequenceValid && movePath.Count <= moveRange;
+
+            ColorTiles(attackPath, (_, index) => canAttack && (index + 1) <= attackRange 
+                ? _mapColorsLibrary.GetColorForAction(TileSelectorActionType.AttackPath) 
+                : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
+
             startTile.SetColor(_mapColorsLibrary.GetColorForAction(TileSelectorActionType.StartTile));
             CachePathForClearing(movePath.Concat(attackPath), startTile);
         }
@@ -199,9 +204,9 @@ namespace IntoTheUnknownTest.Managers
 
         private void CachePathForClearing(IEnumerable<PathfindingNode> path, MapTile startTile)
         {
-            _previousPathTiles = path.Select(node => _mapTiles.GetValueOrDefault(node.GridPosition))
-                .Where(tile => tile != null)
-                .ToList();
+            _previousPathTiles = path.Where(node => node != null && _mapTiles.ContainsKey(node.GridPosition))
+                                     .Select(node => _mapTiles[node.GridPosition])
+                                     .ToList();
             _previousPathTiles.Add(startTile);
         }
 
