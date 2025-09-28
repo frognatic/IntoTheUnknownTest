@@ -34,13 +34,18 @@ namespace IntoTheUnknownTest
 
             seq.Append(_unitSpriteRenderer.DOColor(Color.red, _damageAnimationDuration));
             seq.Append(_unitSpriteRenderer.DOColor(Color.white, _damageAnimationDuration));
-            seq.Append(_unitSpriteRenderer.DOFade(0, _fadeAnimationDuration));
+            seq.Append(_unitSpriteRenderer.DOFade(0, _fadeAnimationDuration)).SetId(gameObject);
 
             seq.OnComplete(() =>
             {
                 _unitSpriteRenderer.DOFade(1, 0);
                 UnitManager.Instance.DespawnUnit(this);
             });
+        }
+
+        private void OnDestroy()
+        {
+            DOTween.Kill(gameObject);
         }
     }
 }

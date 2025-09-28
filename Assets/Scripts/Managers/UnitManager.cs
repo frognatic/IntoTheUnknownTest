@@ -12,6 +12,9 @@ namespace IntoTheUnknownTest.Managers
 {
     public class UnitManager : Singleton<UnitManager>
     {
+        public event Action UnitActionStarted;
+        public event Action UnitActionEnded;
+        
         [SerializeField] private UnitsLibrary _unitsLibrary;
         
         private readonly List<MapTileUnit> _activeUnits = new List<MapTileUnit>();
@@ -38,7 +41,7 @@ namespace IntoTheUnknownTest.Managers
             MapTileUnit newUnit = PoolingManager.Instance.Get<MapTileUnit>(PoolObjectType.Units);
             newUnit.Setup(unitData, targetTile);
 
-            targetTile.OccupyingUnit = newUnit;
+            targetTile.SetOccupant(newUnit);
             _activeUnits.Add(newUnit);
 
             if (unitData is PlayerUnitData)
@@ -53,7 +56,7 @@ namespace IntoTheUnknownTest.Managers
 
             if (unitToDespawn.CurrentTile != null)
             {
-                unitToDespawn.CurrentTile.OccupyingUnit = null;
+                unitToDespawn.CurrentTile.ClearOccupant();
             }
             
             _activeUnits.Remove(unitToDespawn);
@@ -72,26 +75,32 @@ namespace IntoTheUnknownTest.Managers
         
         private IEnumerator MoveUnitCoroutine(MapTileUnit unitToMove, List<Vector3> path, Action onComplete = null)
         {
-            MapTileManager.Instance.LockInput();
+            UnitActionStarted?.Invoke();
             
             MapTile currentTile = unitToMove.CurrentTile;
 
             foreach (var targetPosition in path)
             {
+                if (unitToMove == null || unitToMove.gameObject == null)
+                {
+                    UnitActionEnded?.Invoke();
+                    yield break;
+                }
+                
                 PathfindingNode nextNode = PathfindingManager.Instance.GetNode(targetPosition);
                 if (!MapTileManager.Instance.TryGetTile(nextNode.GridPosition, out MapTile nextTile)) break;
                 
-                Tween moveTween = unitToMove.transform.DOMove(targetPosition, _moveDurationPerTile).SetEase(Ease.Linear);
+                Tween moveTween = unitToMove.transform.DOMove(targetPosition, _moveDurationPerTile).SetEase(Ease.Linear).SetId(gameObject);
                 yield return moveTween.WaitForCompletion();
-                
-                currentTile.OccupyingUnit = null; 
-                nextTile.OccupyingUnit = unitToMove;
+
+                currentTile.ClearOccupant();
+                nextTile.SetOccupant(unitToMove);
                 unitToMove.SetCurrentTile(nextTile);
                 currentTile = nextTile;
             }
             
-            MapTileManager.Instance.UnlockInput();
             onComplete?.Invoke(); 
+            UnitActionEnded?.Invoke();
         }
         
         public void AttackUnit(MapTileUnit attacker, MapTileUnit target, Action onComplete = null)
@@ -101,7 +110,7 @@ namespace IntoTheUnknownTest.Managers
         
         private IEnumerator AttackCoroutine(MapTileUnit attacker, MapTileUnit target, Action onComplete = null)
         {
-            MapTileManager.Instance.LockInput();
+            UnitActionStarted?.Invoke();
 
             Vector3 originalPosition = attacker.transform.position;
             Vector3 targetPosition = target.transform.position;
@@ -109,17 +118,16 @@ namespace IntoTheUnknownTest.Managers
 
             Sequence attackSequence = DOTween.Sequence();
             attackSequence.Append(attacker.transform.DOMove(originalPosition + direction * _attackLungeAnimationDistance, _attackAnimationDuration));
-            attackSequence.Append(attacker.transform.DOMove(originalPosition, _attackAnimationDuration));
+            attackSequence.Append(attacker.transform.DOMove(originalPosition, _attackAnimationDuration)).SetId(gameObject);
         
             yield return attackSequence.WaitForCompletion();
         
             target.TakeDamage();
 
             MapTileManager.Instance.ClearPreviousPathHighlight();
-            MapTileManager.Instance.UnlockInput();
-            yield return null;
             
-            onComplete?.Invoke(); 
+            onComplete?.Invoke();
+            UnitActionEnded?.Invoke();
         }
         
         public void ClearAllUnits()
@@ -130,6 +138,12 @@ namespace IntoTheUnknownTest.Managers
                 DespawnUnit(unit);
             }
             _activeUnits.Clear();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            DOTween.Kill(gameObject);
         }
     }
 }

@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using IntoTheUnknownTest.Libraries;
 using IntoTheUnknownTest.Map;
 using IntoTheUnknownTest.Pathfinding;
@@ -9,6 +9,8 @@ namespace IntoTheUnknownTest.Managers
 {
     public class MapTileManager : Singleton<MapTileManager>
     {
+        public event Action<Vector2Int, bool, bool> TileDataChanged;
+        
         [SerializeField] private MapTileLibrary _mapTileLibrary;
         [SerializeField] private Transform _mapTileContent;
         [SerializeField] private Transform _unitsContent;
@@ -25,18 +27,26 @@ namespace IntoTheUnknownTest.Managers
         private List<MapTile> _previousPathTiles = new List<MapTile>();
         private readonly Dictionary<Vector2Int, MapTile> _mapTiles = new Dictionary<Vector2Int, MapTile>();
 
-        private bool _isAnyActionActive = false;
-        private MapTile _currentTargetTile = null;
+        private bool _isAnyActionActive;
+        private MapTile _currentTargetTile;
         
         private IActionState _currentActionState;
 
         public List<BaseMapTileData> MapTiles => _mapTileLibrary.MapTiles;
-        public BaseMapTileData DefaultMapTileData => _mapTileLibrary.DefaultMapTileData;
 
         private void Start()
         {
             InitializePools();
             GenerateGridAndTiles();
+            
+            UnitManager.Instance.UnitActionStarted += LockInput;
+            UnitManager.Instance.UnitActionEnded += UnlockInput;
+        }
+
+        private void OnDisable()
+        {
+            UnitManager.Instance.UnitActionStarted -= LockInput;
+            UnitManager.Instance.UnitActionEnded -= UnlockInput;
         }
 
         private void InitializePools()
@@ -69,7 +79,7 @@ namespace IntoTheUnknownTest.Managers
         private void ReturnAllPooledMapElements()
         {
             UnitManager.Instance.ClearAllUnits();
-            if (_mapTiles.Any())
+            if (_mapTiles.Count > 0)
             {
                 foreach (var mapTile in _mapTiles.Values)
                 {
@@ -79,8 +89,8 @@ namespace IntoTheUnknownTest.Managers
             _mapTiles.Clear();
         }
 
-        public void LockInput() => _isAnyActionActive = true;
-        public void UnlockInput() => _isAnyActionActive = false;
+        private void LockInput() => _isAnyActionActive = true;
+        private void UnlockInput() => _isAnyActionActive = false;
 
         public void HandleActionRequest(MapTile clickedTile)
         {
@@ -105,11 +115,15 @@ namespace IntoTheUnknownTest.Managers
 
             bool isEnemyClicked = clickedTile.OccupyingUnit?.UnitData is EnemyUnitData;
 
-            _currentActionState = isEnemyClicked 
-                ? new AttackActionState(this) 
-                : new MoveActionState(this);
-            
-            _currentActionState.OnEnter(_currentTargetTile, playerUnit);
+            if (isEnemyClicked)
+            {
+                _currentActionState = new AttackActionState(this);
+            }
+            else if (clickedTile.IsWalkable && clickedTile.OccupyingUnit == null)
+            {
+                _currentActionState = new MoveActionState(this);
+            }
+            _currentActionState?.OnEnter(_currentTargetTile, playerUnit);
         }
         
         public void ClearActionState()
@@ -164,12 +178,7 @@ namespace IntoTheUnknownTest.Managers
             if (_mapTiles.TryGetValue(gridPosition, out MapTile tileToUpdate))
             {
                 SelectTileUpdateAction(mapElement, tileToUpdate);
-
-                var pathfindingGrid = PathfindingManager.Instance.GetPathfindingGrid();
-                PathfindingNode nodeToUpdate = pathfindingGrid.GetNode(gridPosition);
-
-                nodeToUpdate?.SetWalkable(tileToUpdate.IsWalkable);
-                nodeToUpdate?.SetAttackableThrough(tileToUpdate.IsAttackableThrough);
+                TileDataChanged?.Invoke(gridPosition, tileToUpdate.IsWalkable, tileToUpdate.IsAttackableThrough);
             }
         }
 
@@ -181,7 +190,7 @@ namespace IntoTheUnknownTest.Managers
                     tileToUpdate.UpdateTile(selectedTileData);
                     break;
                 case BaseUnitData selectedUnitData:
-                    tileToUpdate.UpdateTile(DefaultMapTileData);
+                    tileToUpdate.UpdateTile(_mapTileLibrary.DefaultMapTileData);
                     UnitManager.Instance.SpawnUnit(selectedUnitData, tileToUpdate);
                     break;
             }

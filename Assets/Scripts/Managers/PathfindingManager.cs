@@ -25,8 +25,24 @@ namespace IntoTheUnknownTest.Managers
             base.Awake();
 
             _closedSet = new HashSet<PathfindingNode>();
-
             _pathfindingGrid = new PathfindingGrid(_gridSettings);
+        }
+
+        private void Start()
+        {
+            MapTileManager.Instance.TileDataChanged += OnTileDataChanged;
+        }
+
+        private void OnDisable()
+        {
+            MapTileManager.Instance.TileDataChanged -= OnTileDataChanged;
+        }
+        
+        private void OnTileDataChanged(Vector2Int gridPosition, bool isWalkable, bool isAttackableThrough)
+        {
+            PathfindingNode nodeToUpdate = GetNode(gridPosition);
+            nodeToUpdate?.SetWalkable(isWalkable);
+            nodeToUpdate?.SetAttackableThrough(isAttackableThrough);
         }
 
         public PathfindingGrid GetPathfindingGrid() => _pathfindingGrid;
@@ -58,6 +74,7 @@ namespace IntoTheUnknownTest.Managers
         }
 
         public PathfindingNode GetNode(Vector3 pos) => _pathfindingGrid.GetNode(pos);
+        public PathfindingNode GetNode(Vector2Int pos) => _pathfindingGrid.GetNode(pos);
 
         private void CalculateMoveToNeighbourCosts(PathfindingNode currentNode, PathfindingNode targetNode, Predicate<PathfindingNode> traversableCondition)
         {

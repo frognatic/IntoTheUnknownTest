@@ -38,6 +38,16 @@ namespace IntoTheUnknownTest
             }
         }
 
+        public void SetOccupant(MapTileUnit newUnit)
+        {
+            OccupyingUnit = newUnit;
+        }
+
+        public void ClearOccupant()
+        {
+            OccupyingUnit = null;
+        }
+
         public void SetColor(Color colorToSet)
         {
             _selector.color = colorToSet;
