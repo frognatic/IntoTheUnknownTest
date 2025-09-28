@@ -15,5 +15,5 @@ MonoBehaviour:
   _id: PlayerUnit
   _mapElementSprite: {fileID: 21300000, guid: ca2ca37afb8ce674099c7f3f6860ff38, type: 3}
   _isUniqueOnMap: 1
-  _moveRange: 2
-  _attackRange: 1
+  _moveRange: 3
+  _attackRange: 2
