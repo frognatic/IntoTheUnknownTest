@@ -12,16 +12,10 @@ namespace IntoTheUnknownTest.Managers
     {
         public event Action<Vector2Int, bool, bool> TileDataChanged;
 
+        [SerializeField] private MapColorsLibrary _mapColorsLibrary;
         [SerializeField] private MapTileLibrary _mapTileLibrary;
         [SerializeField] private Transform _mapTileContent;
         [SerializeField] private Transform _unitsContent;
-
-        [Header("Colors")]
-        [SerializeField] private Color _startTileColor = Color.yellow;
-        [SerializeField] private Color _inRangeColor = Color.green;
-        [SerializeField] private Color _outOfRangeColor = Color.red;
-        [SerializeField] private Color _defaultTileColor = Color.white;
-        [SerializeField] private Color _attackPathColor = Color.cyan;
 
         private const int _defaultMapTilePoolSize = 100;
         private const int _defaultUnitPoolSize = 5;
@@ -35,6 +29,7 @@ namespace IntoTheUnknownTest.Managers
         private IActionState _currentActionState;
 
         public List<BaseMapTileData> MapTiles => _mapTileLibrary.MapTiles;
+        public List<TileSelectorConfig> TileSelectorConfig => _mapColorsLibrary.TileSelectorConfigs;
 
         private void Start()
         {
@@ -147,7 +142,7 @@ namespace IntoTheUnknownTest.Managers
             {
                 if (tile != null)
                 {
-                    tile.SetColor(_defaultTileColor);
+                    tile.SetColor(_mapColorsLibrary.GetColorForAction(TileSelectorActionType.Default));
                 }
             }
         }
@@ -161,10 +156,11 @@ namespace IntoTheUnknownTest.Managers
         {
             ClearPreviousPathHighlight();
 
-            ColorTiles(path, (_, index) => index + 1 <= actionRange ? _inRangeColor : _outOfRangeColor);
+            ColorTiles(path, (_, index) => index + 1 <= actionRange ? 
+                _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange) : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
 
-            startTile.SetColor(_startTileColor);
-            
+            startTile.SetColor(_mapColorsLibrary.GetColorForAction(TileSelectorActionType.StartTile));
+
             CachePathForClearing(path, startTile);
         }
 
@@ -173,16 +169,18 @@ namespace IntoTheUnknownTest.Managers
             ClearPreviousPathHighlight();
 
             // Move path
-            ColorTiles(movePath, (_, index) => isSequenceValid ? _inRangeColor : index + 1 <= moveRange ? _inRangeColor : _outOfRangeColor);
-            
-            // Attack path
-            ColorTiles(attackPath, (_, index) => (index + 1) <= attackRange ? _attackPathColor : _outOfRangeColor);
+            ColorTiles(movePath, (_, index) => isSequenceValid ? 
+                _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange) : index + 1 <= moveRange ? _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange) : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
 
-            startTile.SetColor(_startTileColor);
+            // Attack path
+            ColorTiles(attackPath, (_, index) => (index + 1) <= attackRange ? 
+                _mapColorsLibrary.GetColorForAction(TileSelectorActionType.AttackPath) : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
+
+            startTile.SetColor(_mapColorsLibrary.GetColorForAction(TileSelectorActionType.StartTile));
 
             CachePathForClearing(movePath.Concat(attackPath), startTile);
         }
-        
+
         private void ColorTiles(IEnumerable<PathfindingNode> pathNodes, Func<PathfindingNode, int, Color> colorSelector)
         {
             int index = 0;
@@ -195,7 +193,7 @@ namespace IntoTheUnknownTest.Managers
                 index++;
             }
         }
-        
+
         private void CachePathForClearing(IEnumerable<PathfindingNode> path, MapTile startTile)
         {
             _previousPathTiles = path.Select(node => _mapTiles.GetValueOrDefault(node.GridPosition))

@@ -6,6 +6,7 @@ namespace IntoTheUnknownTest.Map
     {
         [SerializeField] private string _id;
         [SerializeField] private Sprite _mapElementSprite;
+        [SerializeField] protected bool _isUniqueOnMap = true;
         
         public string Id => _id;
         public Sprite MapElementSprite => _mapElementSprite;

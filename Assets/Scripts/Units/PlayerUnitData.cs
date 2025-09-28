@@ -11,7 +11,7 @@ namespace IntoTheUnknownTest.Map
         
         public override bool IsWalkable => false;
         public override bool IsAttackableThrough => false;
-        public override bool IsUniqueOnMap => true;
+        public override bool IsUniqueOnMap => _isUniqueOnMap;
 
         public int MoveRange => _moveRange;
         public int AttackRange => _attackRange;
