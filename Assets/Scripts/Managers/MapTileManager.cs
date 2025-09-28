@@ -155,7 +155,7 @@ namespace IntoTheUnknownTest.Managers
             return _mapTiles.TryGetValue(gridPosition, out tile);
         }
 
-        public void HighlightPath(List<Vector3> path, MapTile startTileObject, int actionRange)
+        public void HighlightPath(List<PathfindingNode> path, MapTile startTileObject, int actionRange)
         {
             var tilesOnPath = GetTilesByPositions(path);
 
@@ -196,12 +196,11 @@ namespace IntoTheUnknownTest.Managers
             }
         }
 
-        private List<MapTile> GetTilesByPositions(List<Vector3> positions)
+        private List<MapTile> GetTilesByPositions(List<PathfindingNode> nodes)
         {
             List<MapTile> result = new List<MapTile>();
-            foreach (var pos in positions)
+            foreach (var node in nodes)
             {
-                PathfindingNode node = PathfindingManager.Instance.GetNode(pos);
                 if (node != null && _mapTiles.TryGetValue(node.GridPosition, out var mapTile))
                 {
                     result.Add(mapTile);

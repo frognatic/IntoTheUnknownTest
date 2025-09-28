@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using IntoTheUnknownTest.Managers;
+using IntoTheUnknownTest.Pathfinding;
 using UnityEngine;
 
 namespace IntoTheUnknownTest.Map
@@ -9,7 +10,7 @@ namespace IntoTheUnknownTest.Map
         private readonly MapTileManager _mapTileManager;
         private MapTileUnit _unit;
         private MapTile _targetTile;
-        private List<Vector3> _currentPath;
+        private List<PathfindingNode> _currentPath;
 
         public MoveActionState(MapTileManager mapTileManager)
         {

@@ -47,7 +47,7 @@ namespace IntoTheUnknownTest.Managers
 
         public PathfindingGrid GetPathfindingGrid() => _pathfindingGrid;
 
-        public List<Vector3> FindPath(Vector3 startPos, Vector3 targetPos, Predicate<PathfindingNode> traversableCondition)
+        public List<PathfindingNode> FindPath(Vector3 startPos, Vector3 targetPos, Predicate<PathfindingNode> traversableCondition)
         {
             PathfindingNode startNode = GetNode(startPos);
             PathfindingNode targetNode = GetNode(targetPos);
@@ -104,7 +104,7 @@ namespace IntoTheUnknownTest.Managers
             }
         }
 
-        private List<Vector3> CalculatedPath(PathfindingNode startNode, PathfindingNode endNode)
+        private List<PathfindingNode> CalculatedPath(PathfindingNode startNode, PathfindingNode endNode)
         {
             List<PathfindingNode> path = new List<PathfindingNode>();
             PathfindingNode currentNode = endNode;
@@ -117,11 +117,7 @@ namespace IntoTheUnknownTest.Managers
 
             path.Reverse();
 
-            List<Vector3> vectorPath = new List<Vector3>();
-            foreach (var node in path)
-                vectorPath.Add(node.WorldPosition);
-
-            return vectorPath;
+            return path;
         }
 
         private int CalculateDistanceCost(PathfindingNode first, PathfindingNode second)

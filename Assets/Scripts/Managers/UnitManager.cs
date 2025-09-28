@@ -68,18 +68,18 @@ namespace IntoTheUnknownTest.Managers
             }
         }
         
-        public void MoveUnitAlongPath(MapTileUnit unitToMove, List<Vector3> path, Action onComplete = null)
+        public void MoveUnitAlongPath(MapTileUnit unitToMove, List<PathfindingNode> path, Action onComplete = null)
         {
             StartCoroutine(MoveUnitCoroutine(unitToMove, path, onComplete));
         }
         
-        private IEnumerator MoveUnitCoroutine(MapTileUnit unitToMove, List<Vector3> path, Action onComplete = null)
+        private IEnumerator MoveUnitCoroutine(MapTileUnit unitToMove, List<PathfindingNode> path, Action onComplete = null)
         {
             UnitActionStarted?.Invoke();
             
             MapTile currentTile = unitToMove.CurrentTile;
 
-            foreach (var targetPosition in path)
+            foreach (var node in path)
             {
                 if (unitToMove == null || unitToMove.gameObject == null)
                 {
@@ -87,10 +87,9 @@ namespace IntoTheUnknownTest.Managers
                     yield break;
                 }
                 
-                PathfindingNode nextNode = PathfindingManager.Instance.GetNode(targetPosition);
-                if (!MapTileManager.Instance.TryGetTile(nextNode.GridPosition, out MapTile nextTile)) break;
+                if (!MapTileManager.Instance.TryGetTile(node.GridPosition, out MapTile nextTile)) break;
                 
-                Tween moveTween = unitToMove.transform.DOMove(targetPosition, _moveDurationPerTile).SetEase(Ease.Linear).SetId(gameObject);
+                Tween moveTween = unitToMove.transform.DOMove(node.WorldPosition, _moveDurationPerTile).SetEase(Ease.Linear).SetId(gameObject);
                 yield return moveTween.WaitForCompletion();
 
                 currentTile.ClearOccupant();
