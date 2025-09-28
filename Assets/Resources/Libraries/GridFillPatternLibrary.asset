@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mapElements:
   - MapElement: {fileID: 11400000, guid: a4bc5bfafa2d61844abaa7f3ac02fa99, type: 2}
-    ElementsToGenerate: {x: 1, y: 3}
+    ElementsToGenerate: {x: 1, y: 4}
   - MapElement: {fileID: 11400000, guid: 29f07206d8fdea249b4bd04e4c06f6a1, type: 2}
-    ElementsToGenerate: {x: 1, y: 3}
+    ElementsToGenerate: {x: 1, y: 4}
   _unitElements:
   - UnitData: {fileID: 11400000, guid: ad6fd5f2dc7ead341a74fc2fed6a0f6c, type: 2}
     ElementsToGenerate: {x: 1, y: 1}
