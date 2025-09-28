@@ -253,6 +253,7 @@ MonoBehaviour:
   _inRangeColor: {r: 0, g: 1, b: 0, a: 0.47058824}
   _outOfRangeColor: {r: 1, g: 0, b: 0, a: 0.47058824}
   _defaultTileColor: {r: 1, g: 1, b: 1, a: 0}
+  _attackPathColor: {r: 0, g: 1, b: 1, a: 0.47058824}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

@@ -75,6 +75,31 @@ namespace IntoTheUnknownTest.Managers
 
         public PathfindingNode GetNode(Vector3 pos) => _pathfindingGrid.GetNode(pos);
         public PathfindingNode GetNode(Vector2Int pos) => _pathfindingGrid.GetNode(pos);
+        
+        public List<PathfindingNode> GetNodesWithinRange(PathfindingNode centerNode, int range)
+        {
+            var results = new List<PathfindingNode>();
+            var grid = GetPathfindingGrid();
+
+            for (int x = -range; x <= range; x++)
+            {
+                for (int y = -range; y <= range; y++)
+                {
+                    if (x == 0 && y == 0) continue;
+
+                    int distance = Mathf.Abs(x) + Mathf.Abs(y);
+                    if (distance > range) continue;
+
+                    Vector2Int checkPos = centerNode.GridPosition + new Vector2Int(x, y);
+            
+                    if (checkPos.x >= 0 && checkPos.x < _gridSettings.GetGridX && checkPos.y >= 0 && checkPos.y < _gridSettings.GetGridY)
+                    {
+                        results.Add(grid.GetNode(checkPos));
+                    }
+                }
+            }
+            return results;
+        }
 
         private void CalculateMoveToNeighbourCosts(PathfindingNode currentNode, PathfindingNode targetNode, Predicate<PathfindingNode> traversableCondition)
         {
