@@ -156,7 +156,7 @@ namespace IntoTheUnknownTest.Managers
         {
             ClearPreviousPathHighlight();
 
-            ColorTiles(path, (_, index) => index + 1 <= actionRange ? 
+            ColorTiles(path, (_, index) => index + 1 <= actionRange ?
                 _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange) : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
 
             startTile.SetColor(_mapColorsLibrary.GetColorForAction(TileSelectorActionType.StartTile));
@@ -168,16 +168,19 @@ namespace IntoTheUnknownTest.Managers
         {
             ClearPreviousPathHighlight();
 
-            // Move path
-            ColorTiles(movePath, (_, index) => isSequenceValid ? 
-                _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange) : index + 1 <= moveRange ? _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange) : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
-
-            // Attack path
-            ColorTiles(attackPath, (_, index) => (index + 1) <= attackRange ? 
-                _mapColorsLibrary.GetColorForAction(TileSelectorActionType.AttackPath) : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
-
+            ColorTiles(movePath, (_, index) => (index + 1) <= moveRange 
+                ? _mapColorsLibrary.GetColorForAction(TileSelectorActionType.InRange)
+                : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange));
+            
+            bool canReachAttackPosition = movePath.Count <= moveRange;
+            ColorTiles(attackPath, (_, index) =>
+            {
+                bool isAttackStepInRange = (index + 1) <= attackRange;
+                return canReachAttackPosition && isAttackStepInRange ? _mapColorsLibrary.GetColorForAction(TileSelectorActionType.AttackPath)
+                    : _mapColorsLibrary.GetColorForAction(TileSelectorActionType.OutOfRange);
+            });
+            
             startTile.SetColor(_mapColorsLibrary.GetColorForAction(TileSelectorActionType.StartTile));
-
             CachePathForClearing(movePath.Concat(attackPath), startTile);
         }
 
