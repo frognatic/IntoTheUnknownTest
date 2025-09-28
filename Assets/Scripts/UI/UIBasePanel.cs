@@ -24,6 +24,7 @@ namespace IntoTheUnknownTest.UI
         protected virtual void OnBackButtonClicked()
         {
             Hide();
+            MapTileManager.Instance.ClearActionState();
             StateManager.Instance.SetGameStateToMenu();
         }
     }
