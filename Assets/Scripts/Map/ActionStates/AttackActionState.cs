@@ -65,28 +65,33 @@ namespace IntoTheUnknownTest.Map
         private void ShowBestImpossibleAction()
         {
             var targetNode = PathfindingManager.Instance.GetNode(_targetTile.GridPosition);
-            
             var allCandidatePositions = GetValidAttackPositions(targetNode, true);
 
             List<PathfindingNode> bestMovePath = null;
             List<PathfindingNode> bestAttackPath = null;
-            int lowestTotalCost = int.MaxValue;
+            int shortestAttackPathLength = int.MaxValue;
 
             foreach (var candidateNode in allCandidatePositions)
             {
-                var movePath = FindPathForMove(_unit.CurrentTile.transform.position, candidateNode.WorldPosition);
-                if (movePath == null) continue;
-                
                 var attackPath = FindPathForAttack(candidateNode.WorldPosition, targetNode.WorldPosition);
                 if (attackPath == null) continue;
 
-                int totalCost = movePath.Count + attackPath.Count;
+                var movePath = FindPathForMove(_unit.CurrentTile.transform.position, candidateNode.WorldPosition);
+                if (movePath == null) continue;
 
-                if (totalCost < lowestTotalCost)
+                if (attackPath.Count < shortestAttackPathLength)
                 {
-                    lowestTotalCost = totalCost;
-                    bestMovePath = movePath;
+                    shortestAttackPathLength = attackPath.Count;
                     bestAttackPath = attackPath;
+                    bestMovePath = movePath;
+                }
+                else if (attackPath.Count == shortestAttackPathLength)
+                {
+                    if (bestMovePath == null || movePath.Count < bestMovePath.Count)
+                    {
+                        bestAttackPath = attackPath;
+                        bestMovePath = movePath;
+                    }
                 }
             }
 
@@ -115,7 +120,6 @@ namespace IntoTheUnknownTest.Map
             {
                 if (_movePath != null && _movePath.Any())
                 {
-                    var movePathVectors = _movePath.Select(n => n.WorldPosition).ToList();
                     UnitManager.Instance.MoveUnitAlongPath(_unit, _movePath, () =>
                     {
                         UnitManager.Instance.AttackUnit(_unit, _targetTile.OccupyingUnit, _mapTileManager.ClearActionState);
@@ -136,7 +140,7 @@ namespace IntoTheUnknownTest.Map
         {
             _mapTileManager.ClearPreviousPathHighlight();
         }
-        
+
         private List<PathfindingNode> FindPathForAttack(Vector3 start, Vector3 end)
         {
             return PathfindingManager.Instance.FindPath(start, end,
@@ -151,7 +155,7 @@ namespace IntoTheUnknownTest.Map
 
         private List<PathfindingNode> GetValidAttackPositions(PathfindingNode targetNode, bool ignoreAttackRange = false)
         {
-            var searchRadius = AttackRange + MoveRange;
+            var searchRadius = AttackRange + MoveRange; 
             var nodesInRange = PathfindingManager.Instance.GetNodesWithinRange(targetNode, searchRadius);
             var validNodes = new List<PathfindingNode>();
 
